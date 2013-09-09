@@ -28,7 +28,7 @@ import org.openrdf.rio.RDFWriterFactory;
  * 
  * @author Arjohn Kampman
  */
-public class NTriplesWriterFactory implements RDFWriterFactory {
+public class CLPWriterFactory implements RDFWriterFactory {
 
 	/**
 	 * Returns {@link RDFFormat#NTRIPLES}.
@@ -38,16 +38,16 @@ public class NTriplesWriterFactory implements RDFWriterFactory {
 	}
 
 	/**
-	 * Returns a new instance of {@link NTriplesWriter}.
+	 * Returns a new instance of {@link CLPWriter}.
 	 */
 	public RDFWriter getWriter(OutputStream out) {
-		return new NTriplesWriter(out);
+		return new CLPWriter(out);
 	}
 
 	/**
-	 * Returns a new instance of {@link NTriplesWriter}.
+	 * Returns a new instance of {@link CLPWriter}.
 	 */
 	public RDFWriter getWriter(Writer writer) {
-		return new NTriplesWriter(writer);
+		return new CLPWriter(writer);
 	}
 }

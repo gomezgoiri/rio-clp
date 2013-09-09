@@ -69,7 +69,7 @@ public abstract class NTriplesParserTestCase extends TestCase {
 		Model model = new LinkedHashModel();
 		ntriplesParser.setRDFHandler(new StatementCollector(model));
 
-		InputStream in = NTriplesParser.class.getResourceAsStream(NTRIPLES_TEST_FILE);
+		InputStream in = CLPParser.class.getResourceAsStream(NTRIPLES_TEST_FILE);
 		try {
 			ntriplesParser.parse(in, NTRIPLES_TEST_URL);
 		}

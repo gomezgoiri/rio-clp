@@ -25,7 +25,7 @@ import org.openrdf.rio.RDFParserFactory;
  * 
  * @author Arjohn Kampman
  */
-public class NTriplesParserFactory implements RDFParserFactory {
+public class CLPParserFactory implements RDFParserFactory {
 
 	/**
 	 * Returns {@link RDFFormat#NTRIPLES}.
@@ -38,6 +38,6 @@ public class NTriplesParserFactory implements RDFParserFactory {
 	 * Returns a new instance of NTriplesParser.
 	 */
 	public RDFParser getParser() {
-		return new NTriplesParser();
+		return new CLPParser();
 	}
 }

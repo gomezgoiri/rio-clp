@@ -50,7 +50,7 @@ import org.openrdf.rio.helpers.RDFParserBase;
  * 
  * @author Arjohn Kampman
  */
-public class NTriplesParser extends RDFParserBase {
+public class CLPParser extends RDFParserBase {
 
 	/*-----------*
 	 * Variables *
@@ -74,7 +74,7 @@ public class NTriplesParser extends RDFParserBase {
 	 * Creates a new NTriplesParser that will use a {@link ValueFactoryImpl} to
 	 * create object for resources, bNodes and literals.
 	 */
-	public NTriplesParser() {
+	public CLPParser() {
 		super();
 	}
 
@@ -85,7 +85,7 @@ public class NTriplesParser extends RDFParserBase {
 	 * @param valueFactory
 	 *        A ValueFactory.
 	 */
-	public NTriplesParser(ValueFactory valueFactory) {
+	public CLPParser(ValueFactory valueFactory) {
 		super(valueFactory);
 	}
 
@@ -451,7 +451,7 @@ public class NTriplesParser extends RDFParserBase {
 		if (c == -1) {
 			throwEOFException();
 		}
-		else if (!NTriplesUtil.isLetter(c)) {
+		else if (!CLPUtil.isLetter(c)) {
 			reportError("Expected a letter, found: " + (char)c,
 					NTriplesParserSettings.FAIL_ON_NTRIPLES_INVALID_LINES);
 		}
@@ -459,7 +459,7 @@ public class NTriplesParser extends RDFParserBase {
 
 		// Read all following letter and numbers, they are part of the name
 		c = reader.read();
-		while (c != -1 && NTriplesUtil.isLetterOrNumber(c)) {
+		while (c != -1 && CLPUtil.isLetterOrNumber(c)) {
 			name.append((char)c);
 			c = reader.read();
 		}
@@ -541,7 +541,7 @@ public class NTriplesParser extends RDFParserBase {
 		throws RDFParseException
 	{
 		try {
-			uri = NTriplesUtil.unescapeString(uri);
+			uri = CLPUtil.unescapeString(uri);
 		}
 		catch (IllegalArgumentException e) {
 			reportError(e.getMessage(), NTriplesParserSettings.FAIL_ON_NTRIPLES_INVALID_LINES);
@@ -554,7 +554,7 @@ public class NTriplesParser extends RDFParserBase {
 		throws RDFParseException
 	{
 		try {
-			label = NTriplesUtil.unescapeString(label);
+			label = CLPUtil.unescapeString(label);
 		}
 		catch (IllegalArgumentException e) {
 			reportFatalError(e);

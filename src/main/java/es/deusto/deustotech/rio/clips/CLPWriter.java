@@ -34,7 +34,7 @@ import org.openrdf.rio.helpers.RDFWriterBase;
  * href="http://www.w3.org/TR/rdf-testcases/#ntriples">this section</a> of the
  * RDF Test Cases document.
  */
-public class NTriplesWriter extends RDFWriterBase implements RDFWriter {
+public class CLPWriter extends RDFWriterBase implements RDFWriter {
 
 	/*-----------*
 	 * Variables *
@@ -54,7 +54,7 @@ public class NTriplesWriter extends RDFWriterBase implements RDFWriter {
 	 * @param out
 	 *        The OutputStream to write the N-Triples document to.
 	 */
-	public NTriplesWriter(OutputStream out) {
+	public CLPWriter(OutputStream out) {
 		this(new OutputStreamWriter(out, Charset.forName("US-ASCII")));
 	}
 
@@ -64,7 +64,7 @@ public class NTriplesWriter extends RDFWriterBase implements RDFWriter {
 	 * @param writer
 	 *        The Writer to write the N-Triples document to.
 	 */
-	public NTriplesWriter(Writer writer) {
+	public CLPWriter(Writer writer) {
 		this.writer = writer;
 		writingStarted = false;
 	}
@@ -117,11 +117,11 @@ public class NTriplesWriter extends RDFWriterBase implements RDFWriter {
 		}
 
 		try {
-			NTriplesUtil.append(st.getSubject(), writer);
+			CLPUtil.append(st.getSubject(), writer);
 			writer.write(" ");
-			NTriplesUtil.append(st.getPredicate(), writer);
+			CLPUtil.append(st.getPredicate(), writer);
 			writer.write(" ");
-			NTriplesUtil.append(st.getObject(), writer);
+			CLPUtil.append(st.getObject(), writer);
 			writer.write(" .\n");
 		}
 		catch (IOException e) {

@@ -28,7 +28,7 @@ import org.openrdf.model.ValueFactory;
 /**
  * Utility methods for N-Triples encoding/decoding.
  */
-public class NTriplesUtil {
+public class CLPUtil {
 
 	/**
 	 * Parses an N-Triples value, creates an object for it using the supplied
