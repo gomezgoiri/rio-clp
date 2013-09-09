@@ -198,18 +198,22 @@ public class CLPParser extends RDFParserBase {
 					// Empty line, ignore
 					c = skipLine(c);
 				}
-				else if (c == '(') {
-					// Skip '('
-					c = reader.read();
-
-					if (c != '.') {
-						reportFatalError("Expected '.' after '(', found: " + (char)c);
+				else {
+					if (c == '(') {
+						// Skip '('
+						c = reader.read();
+	
+						if (c != '.') {
+							reportFatalError("Expected '.' after '(', found: " + (char)c );
+						}
+						// Skip '.'
+						c = reader.read();
+						
+						c = skipWhitespace(c);
+						c = parseTriple(c);
+					} else {
+						reportFatalError("Expected '(' at the beginning of a triple, found: " + (char)c );
 					}
-					// Skip '.'
-					c = reader.read();
-					
-					c = skipWhitespace(c);
-					c = parseTriple(c);
 				}
 
 				c = skipWhitespace(c);
