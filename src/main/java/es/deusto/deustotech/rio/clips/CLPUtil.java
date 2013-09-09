@@ -17,6 +17,7 @@
 package es.deusto.deustotech.rio.clips;
 
 import java.io.IOException;
+import java.util.Set;
 
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
@@ -24,9 +25,12 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.model.Namespace;
 
 /**
- * Utility methods for N-Triples encoding/decoding.
+ * Utility methods for CLIPS encoding/decoding (mostly based on N-Triples' one).
+ * 
+ * The main difference is that the append method, shortens some URIs.
  */
 public class CLPUtil {
 
@@ -231,11 +235,11 @@ public class CLPUtil {
 		}
 	}
 
-	public static void append(Value value, Appendable appendable)
+	public static void append(Value value, Appendable appendable, Set<Namespace> namespacesToBeShortened)
 		throws IOException
 	{
 		if (value instanceof Resource) {
-			append((Resource)value, appendable);
+			append((Resource)value, appendable, namespacesToBeShortened);
 		}
 		else if (value instanceof Literal) {
 			append((Literal)value, appendable);
@@ -260,11 +264,11 @@ public class CLPUtil {
 		}
 	}
 
-	public static void append(Resource resource, Appendable appendable)
+	public static void append(Resource resource, Appendable appendable, Set<Namespace> namespacesToBeShortened)
 		throws IOException
 	{
 		if (resource instanceof URI) {
-			append((URI)resource, appendable);
+			append((URI)resource, appendable, namespacesToBeShortened);
 		}
 		else if (resource instanceof BNode) {
 			append((BNode)resource, appendable);
@@ -281,12 +285,28 @@ public class CLPUtil {
 		return "<" + escapeString(uri.toString()) + ">";
 	}
 
-	public static void append(URI uri, Appendable appendable)
+	public static void append(URI uri, Appendable appendable,Set<Namespace> namespacesToBeShortened)
 		throws IOException
 	{
-		appendable.append("<");
-		escapeString(uri.toString(), appendable);
-		appendable.append(">");
+		final String suri = uri.toString();
+		Namespace shortenWith = null;
+		
+		if( namespacesToBeShortened!=null ) {
+			for( Namespace namespace: namespacesToBeShortened ) {
+				if( suri.startsWith(namespace.getPrefix()) ) { 
+					shortenWith = namespace;
+					break;
+				}
+			}
+		}
+		
+		if( shortenWith == null ) {
+			appendable.append("<");
+			escapeString(suri, appendable);
+			appendable.append(">");
+		} else {
+			escapeString( shortenWith.getPrefix() + ":" + suri.substring( shortenWith.getName().length() ), appendable );
+		}
 	}
 
 	/**
@@ -333,7 +353,7 @@ public class CLPUtil {
 		else if (lit.getDatatype() != null) {
 			// Append the literal's datatype
 			appendable.append("^^");
-			append(lit.getDatatype(), appendable);
+			append(lit.getDatatype(), appendable, null);
 		}
 	}
 

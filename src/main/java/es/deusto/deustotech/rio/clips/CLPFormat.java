@@ -16,6 +16,11 @@ package es.deusto.deustotech.rio.clips;
 import java.nio.charset.Charset;
 import org.openrdf.rio.RDFFormat;
 
+/**
+ * CLP format.
+ * 
+ * @author Aitor Gómez Goiri
+ */
 public class CLPFormat extends RDFFormat {
 
 	public static RDFFormat CLP = new CLPFormat();

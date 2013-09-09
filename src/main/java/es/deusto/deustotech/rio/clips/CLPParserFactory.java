@@ -1,18 +1,15 @@
-/* 
- * Licensed to Aduna under one or more contributor license agreements.  
- * See the NOTICE.txt file distributed with this work for additional 
- * information regarding copyright ownership. 
+/*
+ * Copyright (C) 2013 onwards University of Deusto
+ * 
+ * All rights reserved.
  *
- * Aduna licenses this file to you under the terms of the Aduna BSD 
- * License (the "License"); you may not use this file except in compliance 
- * with the License. See the LICENSE.txt file distributed with this work 
- * for the full License.
+ * This software is licensed as described in the file LICENSE, which
+ * you should have received as part of this distribution.
+ * 
+ * This software consists of contributions made by many individuals, 
+ * listed in the file NOTICE and below:
  *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or 
- * implied. See the License for the specific language governing permissions
- * and limitations under the License.
+ * Author: Aitor Gómez Goiri <aitor.gomez@deusto.es>
  */
 package es.deusto.deustotech.rio.clips;
 
@@ -20,18 +17,20 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.RDFParserFactory;
 
+import es.deusto.deustotech.rio.clips.CLPParser;
+
 /**
- * An {@link RDFParserFactory} for N-Triples parsers.
+ * An {@link RDFParserFactory} for cLP parsers.
  * 
- * @author Arjohn Kampman
+ * @author Aitor Gómez-Goiri
  */
 public class CLPParserFactory implements RDFParserFactory {
 
 	/**
-	 * Returns {@link RDFFormat#NTRIPLES}.
+	 * Returns {@link CLPFormat#CLP}.
 	 */
 	public RDFFormat getRDFFormat() {
-		return RDFFormat.NTRIPLES;
+		return CLPFormat.CLP;
 	}
 
 	/**

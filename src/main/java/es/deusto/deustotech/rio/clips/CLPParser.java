@@ -1,18 +1,16 @@
-/* 
- * Licensed to Aduna under one or more contributor license agreements.  
- * See the NOTICE.txt file distributed with this work for additional 
- * information regarding copyright ownership. 
+/*
+ * Copyright (C) 2013 onwards University of Deusto
+ * 
+ * All rights reserved.
  *
- * Aduna licenses this file to you under the terms of the Aduna BSD 
- * License (the "License"); you may not use this file except in compliance 
- * with the License. See the LICENSE.txt file distributed with this work 
- * for the full License.
+ * This software is licensed as described in the file LICENSE, which
+ * you should have received as part of this distribution.
+ * 
+ * This software consists of contributions made by many individuals, 
+ * listed in the file NOTICE and below:
  *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or 
- * implied. See the License for the specific language governing permissions
- * and limitations under the License.
+ * Author: Aitor Gómez Goiri <aitor.gomez@deusto.es>
+ * 		   Arjohn Kampman (N-Triples parser)
  */
 package es.deusto.deustotech.rio.clips;
 
@@ -21,13 +19,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.io.input.BOMInputStream;
-
 import org.openrdf.model.Literal;
+import org.openrdf.model.Namespace;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
@@ -38,17 +38,15 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RioSetting;
-import org.openrdf.rio.helpers.BasicParserSettings;
 import org.openrdf.rio.helpers.NTriplesParserSettings;
 import org.openrdf.rio.helpers.RDFParserBase;
 
 /**
- * RDF parser for N-Triples files. A specification of NTriples can be found in
- * <a href="http://www.w3.org/TR/rdf-testcases/#ntriples">this section</a> of
- * the RDF Test Cases document. This parser is not thread-safe, therefore its
- * public methods are synchronized.
+ * RDF parser for CLP-like ({@link CLPFormat}) files.
+ * Heavily based on N-Triples parser.
  * 
  * @author Arjohn Kampman
+ * @author Aitor Gómez Goiri
  */
 public class CLPParser extends RDFParserBase {
 
@@ -57,6 +55,8 @@ public class CLPParser extends RDFParserBase {
 	 *-----------*/
 
 	protected Reader reader;
+	
+	protected final Map<String,String> prefixesUsed = new HashMap<String,String>();
 
 	protected int lineNo;
 
@@ -76,6 +76,7 @@ public class CLPParser extends RDFParserBase {
 	 */
 	public CLPParser() {
 		super();
+		createPrefixMap();
 	}
 
 	/**
@@ -87,6 +88,14 @@ public class CLPParser extends RDFParserBase {
 	 */
 	public CLPParser(ValueFactory valueFactory) {
 		super(valueFactory);
+		createPrefixMap();
+	}
+
+	private void createPrefixMap() {
+		Set<Namespace> nss = NamespacesFactory.createNamespacesUsedByDefaultInOurCLIPSRules();
+		for (Namespace ns: nss) {
+			this.prefixesUsed.put(ns.getPrefix(), ns.getName());
+		}
 	}
 
 	/*---------*
@@ -189,7 +198,17 @@ public class CLPParser extends RDFParserBase {
 					// Empty line, ignore
 					c = skipLine(c);
 				}
-				else {
+				else if (c == '(') {
+					// Skip '('
+					c = reader.read();
+
+					if (c != '.') {
+						reportFatalError("Expected '.' after '(', found: " + (char)c);
+					}
+					// Skip '.'
+					c = reader.read();
+					
+					c = skipWhitespace(c);
 					c = parseTriple(c);
 				}
 
@@ -294,8 +313,8 @@ public class CLPParser extends RDFParserBase {
 			if (c == -1) {
 				throwEOFException();
 			}
-			else if (c != '.') {
-				reportError("Expected '.', found: " + (char)c,
+			else if (c != ')') {
+				reportError("Expected ')', found: " + (char)c,
 						NTriplesParserSettings.FAIL_ON_NTRIPLES_INVALID_LINES);
 			}
 
@@ -338,6 +357,10 @@ public class CLPParser extends RDFParserBase {
 			c = parseUriRef(c, sb);
 			subject = createURI(sb.toString());
 		}
+		else if ( ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ) ) {
+			c = parseShortenedUriRef(c, sb);
+			subject = createURI(sb.toString());
+		}
 		else if (c == '_') {
 			// subject is a bNode
 			c = parseNodeID(c, sb);
@@ -364,6 +387,10 @@ public class CLPParser extends RDFParserBase {
 			c = parseUriRef(c, sb);
 			predicate = createURI(sb.toString());
 		}
+		else if ( ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ) ) {
+			c = parseShortenedUriRef(c, sb);
+			subject = createURI(sb.toString());
+		}
 		else if (c == -1) {
 			throwEOFException();
 		}
@@ -386,6 +413,10 @@ public class CLPParser extends RDFParserBase {
 			c = parseUriRef(c, sb);
 			object = createURI(sb.toString());
 		}
+		else if ( ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ) ) {
+			c = parseShortenedUriRef(c, sb);
+			subject = createURI(sb.toString());
+		}
 		else if (c == '_') {
 			// object is a bNode
 			c = parseNodeID(c, sb);
@@ -405,6 +436,42 @@ public class CLPParser extends RDFParserBase {
 			reportFatalError("Expected '<', '_' or '\"', found: " + (char)c + "");
 		}
 
+		return c;
+	}
+	
+	protected int parseShortenedUriRef(int c, StringBuilder uriRef)
+		throws IOException, RDFParseException
+	{
+		if ( !( c >= 'a' && c <= 'z' ) && !( c >= 'A' && c <= 'Z' ) ) {
+			reportError("Supplied char should be [a-zA-Z], is: " + (char)c,
+					NTriplesParserSettings.FAIL_ON_NTRIPLES_INVALID_LINES);
+		}
+		
+		final StringBuilder prefix = new StringBuilder();
+		
+		while (c != ':') {
+			if (c == -1) {
+				throwEOFException();
+			}
+			prefix.append((char)c);
+			c = reader.read();
+		}
+		
+		// Apend URI for that given prefix
+		uriRef.append(prefixesUsed.get(prefix));
+
+		// c == ':', read next char
+		c = reader.read();
+				
+		while (c != ' ') {
+			if (c == -1) {
+				throwEOFException();
+			}
+			uriRef.append((char)c);
+			c = reader.read();
+		}
+		
+		// ' ' will be skipped by next method
 		return c;
 	}
 
@@ -573,7 +640,7 @@ public class CLPParser extends RDFParserBase {
 			dtURI = createURI(datatype);
 		}
 
-		return super.createLiteral(label, lang, dtURI, lineNo, -1);
+		return super.createLiteral(label, lang, dtURI);//, lineNo, -1);
 	}
 
 	/**
@@ -703,5 +770,4 @@ public class CLPParser extends RDFParserBase {
 
 		return result;
 	}
-
 }

@@ -1,18 +1,15 @@
-/* 
- * Licensed to Aduna under one or more contributor license agreements.  
- * See the NOTICE.txt file distributed with this work for additional 
- * information regarding copyright ownership. 
+/*
+ * Copyright (C) 2013 onwards University of Deusto
+ * 
+ * All rights reserved.
  *
- * Aduna licenses this file to you under the terms of the Aduna BSD 
- * License (the "License"); you may not use this file except in compliance 
- * with the License. See the LICENSE.txt file distributed with this work 
- * for the full License.
+ * This software is licensed as described in the file LICENSE, which
+ * you should have received as part of this distribution.
+ * 
+ * This software consists of contributions made by many individuals, 
+ * listed in the file NOTICE and below:
  *
- * Unless required by applicable law or agreed to in writing, software 
- * distributed under the License is distributed on an "AS IS" BASIS, 
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or 
- * implied. See the License for the specific language governing permissions
- * and limitations under the License.
+ * Author: Aitor Gómez Goiri <aitor.gomez@deusto.es>
  */
 package es.deusto.deustotech.rio.clips;
 
@@ -21,18 +18,22 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.Set;
 
+import org.openrdf.model.Namespace;
 import org.openrdf.model.Statement;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.helpers.RDFWriterBase;
 
+
 /**
  * An implementation of the RDFWriter interface that writes RDF documents in
- * N-Triples format. The N-Triples format is defined in <a
- * href="http://www.w3.org/TR/rdf-testcases/#ntriples">this section</a> of the
- * RDF Test Cases document.
+ * CLP format. The CLP format is a serialization with <a
+ * href="http://clipsrules.sourceforge.net/">CLIPS</a>' format.
+ * 
+ * @author Aitor Gómez Goiri
  */
 public class CLPWriter extends RDFWriterBase implements RDFWriter {
 
@@ -41,6 +42,8 @@ public class CLPWriter extends RDFWriterBase implements RDFWriter {
 	 *-----------*/
 
 	protected final Writer writer;
+	
+	protected final Set<Namespace> namespacesToBeShortened;
 
 	protected boolean writingStarted;
 
@@ -66,7 +69,8 @@ public class CLPWriter extends RDFWriterBase implements RDFWriter {
 	 */
 	public CLPWriter(Writer writer) {
 		this.writer = writer;
-		writingStarted = false;
+		this.writingStarted = false;
+		this.namespacesToBeShortened = NamespacesFactory.createNamespacesUsedByDefaultInOurCLIPSRules();
 	}
 
 	/*---------*
@@ -117,12 +121,14 @@ public class CLPWriter extends RDFWriterBase implements RDFWriter {
 		}
 
 		try {
-			CLPUtil.append(st.getSubject(), writer);
+			// TODO expected format: (. ?s owl:sameAs ?s)
+			writer.write("(. ");
+			CLPUtil.append(st.getSubject(), writer, namespacesToBeShortened);
 			writer.write(" ");
-			CLPUtil.append(st.getPredicate(), writer);
+			CLPUtil.append(st.getPredicate(), writer, namespacesToBeShortened);
 			writer.write(" ");
-			CLPUtil.append(st.getObject(), writer);
-			writer.write(" .\n");
+			CLPUtil.append(st.getObject(), writer, namespacesToBeShortened);
+			writer.write(" )\n");
 		}
 		catch (IOException e) {
 			throw new RDFHandlerException(e);
