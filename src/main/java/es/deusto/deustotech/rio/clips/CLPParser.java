@@ -393,7 +393,7 @@ public class CLPParser extends RDFParserBase {
 		}
 		else if ( ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ) ) {
 			c = parseShortenedUriRef(c, sb);
-			subject = createURI(sb.toString());
+			predicate = createURI(sb.toString());
 		}
 		else if (c == -1) {
 			throwEOFException();
@@ -419,7 +419,7 @@ public class CLPParser extends RDFParserBase {
 		}
 		else if ( ( c >= 'a' && c <= 'z' ) || ( c >= 'A' && c <= 'Z' ) ) {
 			c = parseShortenedUriRef(c, sb);
-			subject = createURI(sb.toString());
+			object = createURI(sb.toString());
 		}
 		else if (c == '_') {
 			// object is a bNode
@@ -462,8 +462,8 @@ public class CLPParser extends RDFParserBase {
 		}
 		
 		// Apend URI for that given prefix
-		uriRef.append(prefixesUsed.get(prefix));
-
+		uriRef.append( this.prefixesUsed.get( prefix.toString() ) );
+		
 		// c == ':', read next char
 		c = reader.read();
 				
