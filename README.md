@@ -1,7 +1,7 @@
 RDF for CLIPS parser/serializer
 ===============================
 
-Completely unstandard CLIPS-suitable semantic format's parser and serializer for Sesame's Rio.
+Completely unstandard CLIPS-suitable semantic format's parser and serializer for [Sesame's Rio](http://www.openrdf.org/doc/sesame2/2.7.0-beta1/users/ch09.html).
 
 This format is based on NTriples.
 Therefore, we used Aduna's NTriples serializer and parser as a baseline.
@@ -10,7 +10,7 @@ Most of the credit goes for them.
 Regarding our format
 --------------------
  
- * A RDF triple in our CLIPS format must have the following shape: (. subject predicate object )
+ * A RDF triple in our CLIPS format must have the following shape: *(. subject predicate object )*
   * The subject's, predicate's and object's serializations are the same as in [N-Triples](http://www.w3.org/2001/sw/RDFCore/ntriples/).
   * The URIs can be shortened using prefixes which are hidden to CLIPS in the CLP serialization.
     * This means that we must retain this correspondences to extend the URIs after CLIPS reasoning.
