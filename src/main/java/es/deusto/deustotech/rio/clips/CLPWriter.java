@@ -121,13 +121,13 @@ public class CLPWriter extends RDFWriterBase implements RDFWriter {
 		}
 
 		try {
-			// TODO expected format: (. ?s owl:sameAs ?s)
+			// expected format: (. ?s owl:sameAs ?s)
 			writer.write("(. ");
-			CLPUtil.append(st.getSubject(), writer, namespacesToBeShortened);
+			CLPUtil.append(st.getSubject(), writer, this.namespacesToBeShortened);
 			writer.write(" ");
-			CLPUtil.append(st.getPredicate(), writer, namespacesToBeShortened);
+			CLPUtil.append(st.getPredicate(), writer, this.namespacesToBeShortened);
 			writer.write(" ");
-			CLPUtil.append(st.getObject(), writer, namespacesToBeShortened);
+			CLPUtil.append(st.getObject(), writer, this.namespacesToBeShortened);
 			writer.write(" )\n");
 		}
 		catch (IOException e) {

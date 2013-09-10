@@ -293,7 +293,7 @@ public class CLPUtil {
 		
 		if( namespacesToBeShortened!=null ) {
 			for( Namespace namespace: namespacesToBeShortened ) {
-				if( suri.startsWith(namespace.getPrefix()) ) { 
+				if( suri.startsWith(namespace.getName()) ) { 
 					shortenWith = namespace;
 					break;
 				}
